@@ -1,0 +1,13 @@
+.appointment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.appointment-form .form-group {
+    margin-bottom: 0;
+}
+
+.appointment-form button {
+    margin-top: 10px;
+}
