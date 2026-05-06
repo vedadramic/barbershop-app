@@ -3,22 +3,6 @@
 A full-stack web application for managing barbershop appointments, services, and customer reviews. Features user authentication, appointment scheduling, and a comprehensive service catalog.
 
 ---
-
-## 📋 Table of Contents
-
-- [About the Project](#about-the-project)
-- [Key Features](#key-features)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [API Endpoints](#api-endpoints)
-- [Usage Guide](#usage-guide)
-
----
-
 ## About the Project
 
 Alen's Barbershop is a modern appointment booking system designed to streamline barbershop operations. Customers can:
@@ -33,35 +17,6 @@ Business operators can:
 - Track appointments
 - View customer reviews
 - Monitor feedback
-
----
-
-## Key Features
-
-✨ **User Authentication**
-- User registration and login with JWT tokens
-- Password encryption with bcryptjs
-- Secure session management
-
-📅 **Appointment Management**
-- Schedule appointments with date, time, and notes
-- View appointment history
-- Cancel or modify bookings
-
-💇 **Service Management**
-- Browse available barbershop services
-- View service details and pricing
-- Add or remove services
-
-⭐ **Reviews & Ratings**
-- Customers can leave reviews after appointments
-- Service ratings system
-- View all customer feedback
-
-🔐 **Security**
-- JWT-based authentication
-- Password encryption
-- CORS-enabled for secure cross-origin requests
 
 ---
 
@@ -148,10 +103,9 @@ alens-barbershop/
 
 Before you begin, ensure you have installed:
 
-- **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
+- **Node.js** - [Download](https://nodejs.org/)
 - **npm** (comes with Node.js)
-- **MySQL Server** (v5.7 or higher) - [Download](https://dev.mysql.com/downloads/mysql/)
-- **Git** - [Download](https://git-scm.com/)
+- **MySQL Server** - [Download](https://dev.mysql.com/downloads/mysql/)
 
 ---
 
@@ -200,7 +154,7 @@ CREATE TABLE users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    phone VARCHAR(15),
+    phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -210,9 +164,11 @@ CREATE TABLE services (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
-    duration_minutes INT,
+    duration INT NOT NULL,
+    image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Appointments table
 CREATE TABLE appointments (
@@ -221,24 +177,30 @@ CREATE TABLE appointments (
     service_id INT NOT NULL,
     appointment_date DATE NOT NULL,
     appointment_time TIME NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
     notes TEXT,
-    status ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (service_id) REFERENCES services(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
 );
-
 -- Reviews table
 CREATE TABLE reviews (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    appointment_id INT,
-    rating INT CHECK (rating >= 1 AND rating <= 5),
-    comment TEXT,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (appointment_id) REFERENCES appointments(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Insert values
+INSERT INTO services (name, description, price, duration, image_url) VALUES
+('Muško šišanje', 'Profesionalno muško šišanje sa stilizovanjem', 15.00, 30, 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400'),
+('Brijanje brade', 'Tradicionalno brijanje sa toplim peškirom', 12.00, 25, 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400'),
+('Šišanje + Brada', 'Kompletna usluga šišanja i brijanja', 25.00, 50, 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400'),
+('Pranje kose', 'Pranje i stilizovanje kose', 8.00, 20, 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400');
+
+
 ```
 
 ---
@@ -247,7 +209,7 @@ CREATE TABLE reviews (
 
 ### Backend Environment Variables
 
-Create a `.env` file in the `backend/` directory (do not commit this file):
+Create a `.env` file in the `backend/` directory:
 
 ```env
 # Database Configuration
@@ -255,25 +217,13 @@ DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=barbershop_db
-DB_PORT=3306
 
 # Server Configuration
 PORT=5000
-NODE_ENV=development
 
 # JWT Configuration
 JWT_SECRET=your_secret_key_here_change_in_production
-JWT_EXPIRE=7d
-
-# CORS Configuration
-FRONTEND_URL=http://localhost:3000
 ```
-
-**⚠️ Important:** 
-- Never commit `.env` file to version control
-- Change `JWT_SECRET` to a strong, random string in production
-- Use strong database passwords in production
-
 ### Frontend Environment Variables (Optional)
 
 Create a `.env` file in the `frontend/` directory if needed:
@@ -306,61 +256,5 @@ npm start
 
 The frontend will open at `http://localhost:3000`
 
-### Production Build
-
-To create an optimized production build:
-
-```bash
-cd frontend
-npm run build
-```
-
----
-
-## API Endpoints
-
-### Authentication
-- `POST /api/users/register` - Register a new user
-- `POST /api/users/login` - User login
-
-### Services
-- `GET /api/services` - Get all services
-- `GET /api/services/:id` - Get service by ID
-- `POST /api/services` - Create new service (admin)
-- `PUT /api/services/:id` - Update service (admin)
-- `DELETE /api/services/:id` - Delete service (admin)
-
-### Appointments
-- `GET /api/appointments` - Get user's appointments
-- `GET /api/appointments/:id` - Get appointment by ID
-- `POST /api/appointments` - Create new appointment
-- `PUT /api/appointments/:id` - Update appointment
-- `DELETE /api/appointments/:id` - Cancel appointment
-
-### Reviews
-- `GET /api/reviews` - Get all reviews
-- `POST /api/reviews` - Create new review
-- `GET /api/reviews/:id` - Get review by ID
-- `PUT /api/reviews/:id` - Update review
-- `DELETE /api/reviews/:id` - Delete review
-
----
-
-## Usage Guide
-
-### For Customers
-
-1. **Register Account**: Click "Register" and enter your details
-2. **Browse Services**: View available services on the home page
-3. **Book Appointment**: Navigate to Dashboard → Click "Book Appointment"
-4. **Select Details**: Choose service, date, time, and add notes
-5. **Confirm Booking**: Submit the form to create appointment
-6. **Leave Review**: After appointment completion, submit a review
-
-### For Administrators
-
-1. **Manage Services**: Add, edit, or remove services through the admin panel
-2. **View Appointments**: Access the appointments listing
-3. **Monitor Reviews**: Read and respond to customer feedback
-
+Enjoy!
 ---
