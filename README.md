@@ -16,8 +16,6 @@ A full-stack web application for managing barbershop appointments, services, and
 - [Running the Application](#running-the-application)
 - [API Endpoints](#api-endpoints)
 - [Usage Guide](#usage-guide)
-- [Contributing](#contributing)
-- [License](#license)
 
 ---
 
@@ -367,25 +365,7 @@ npm run build
 
 ---
 
-## Contributing
 
-Contributions are welcome! To contribute:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/YourFeature`)
-3. Commit changes (`git commit -m 'Add YourFeature'`)
-4. Push to branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
-
----
-
-## License
-
-This project is licensed under the ISC License.
-
----
-
-## Support
 
 For issues or questions, please open an issue on the GitHub repository.
 
