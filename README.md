@@ -364,11 +364,3 @@ npm run build
 3. **Monitor Reviews**: Read and respond to customer feedback
 
 ---
-
-
-
-For issues or questions, please open an issue on the GitHub repository.
-
----
-
-**Happy coding! 🎉**
